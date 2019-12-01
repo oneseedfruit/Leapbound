@@ -30,10 +30,4 @@ public class EventManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

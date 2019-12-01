@@ -8,8 +8,35 @@ public abstract class MovingPiece : MonoBehaviour
     public LayerMask blockingLayer;
             
     private BoxCollider boxCollider;
-    private Rigidbody rb;
+    protected Rigidbody rb;
     private float inverseMoveTime;
+
+    private bool hasMovedThisTurn = false;
+    public bool HasMovedThisTurn
+    {
+        get
+        {
+            return hasMovedThisTurn;
+        }
+    }
+
+    private bool hasAttackedThisTurn = false;
+    public bool HasAttackedThisTurn 
+    {
+        get
+        {
+            return hasAttackedThisTurn;
+        }
+    }
+
+    private TileCoord tileCoord = new TileCoord(0, 0);
+    public TileCoord TileCoord
+    {
+        get
+        {
+            return tileCoord;
+        }
+    }
     
     protected virtual void Start()
     {			
@@ -26,9 +53,10 @@ public abstract class MovingPiece : MonoBehaviour
         Physics.Linecast(start, end, out hit, blockingLayer);
         boxCollider.enabled = true;
         
-        if(hit.transform == null)
+        if(hit.transform == null && !hasMovedThisTurn)
         {				
             StartCoroutine(SmoothMovement(end));
+            hasMovedThisTurn = true;
             return true;
         }
         
@@ -48,19 +76,42 @@ public abstract class MovingPiece : MonoBehaviour
         }
     }
     
-    protected virtual void AttemptMove<T>(float xDir, float yDir) where T : Component
+    protected virtual bool AttemptMove<T>(float xDir, float yDir) where T : Component
     {
         RaycastHit hit;
         bool canMove = Move(xDir, yDir, out hit);
 
         if(hit.transform == null)
-            return;
+        {            
+            return canMove;
+        }
                     
         T hitComponent = hit.transform.GetComponent<T>();
 
         if(!canMove && hitComponent != null)
+        {
             OnCantMove(hitComponent);
+        }
+
+        return canMove;
     }
     
+    protected virtual void MoveToTileCoord(int x, int y)
+    {
+        Vector3 target = GameManager.instance.Board.GetTilePositionFromTileCoord(x, y);
+        Vector3 targetDir = target - transform.position;
+
+        if (AttemptMove<PlayerPiece>(targetDir.x, targetDir.y))
+        {
+            tileCoord.x = x;
+            tileCoord.y = y;
+        }
+    }
+
     protected abstract void OnCantMove<T>(T component) where T : Component;
+
+    public virtual void ResetMoveTurn()
+    {
+        hasMovedThisTurn = false;
+    }
 }

@@ -5,14 +5,11 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     public TileCoord tileCoord = new TileCoord(0, 0);
-
-    public TileShade tileShade = TileShade.light;
-        
-    public Sprite[] tileSprites = new Sprite[2];
-    
+    public TileShade tileShade = TileShade.light;        
+    public Sprite[] tileSprites = new Sprite[2];    
     public SpriteRenderer sprTile;
-
     private bool isHovered = false;
+    private Color hoverColor = new Color(1.0f, 0.5f, 0, 1);
 
     // Start is called before the first frame update
     private void Awake()
@@ -27,7 +24,7 @@ public class Tile : MonoBehaviour
 
         if (isHovered)
         {
-            sprTile.color = new Color(1.0f, 0.5f, 0, 1);
+            sprTile.color = hoverColor;
             isHovered = false;
         }
         else
@@ -36,8 +33,9 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public void Select()
+    public void Select(Color color)
     {
+        hoverColor = color;
         isHovered = true;
     }
 }
