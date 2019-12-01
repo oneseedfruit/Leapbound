@@ -128,11 +128,11 @@ public class Board : MonoBehaviour
                 if (hitCol.tag == "Tile")
                 {
                     Tile t = hitCol.gameObject.GetComponent<Tile>();
-                    t.Select(new Color(1.0f, 0.5f, 0.5f));
+                    t.Select(new Color(0.7f, 0.5f, 0.2f));
 
                     if (Input.GetMouseButton(0))
                     {
-                        t.Select(Color.white);
+                        t.Select(new Color(1.0f, 0.2f, 0.2f));
                         EventManager.instance.ClickTileCoord(t.tileCoord.x, t.tileCoord.y);
                     }
                 }

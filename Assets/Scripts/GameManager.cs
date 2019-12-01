@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     }
 
     public GameObject player;
+    public GameObject crosshair;
     public Vector2 playerStartTileCoord = new Vector2(0, 0);
 
     private void Awake() 
@@ -39,5 +40,6 @@ public class GameManager : MonoBehaviour
     private void Start() 
     {
         player = Instantiate(player, board.GetTilePositionFromTileCoord(0, 0), Quaternion.identity) as GameObject;
+        crosshair = Instantiate(crosshair, board.GetTilePositionFromTileCoord(0, 0), Quaternion.identity) as GameObject;
     }
 }

@@ -20,15 +20,6 @@ public abstract class MovingPiece : MonoBehaviour
         }
     }
 
-    private bool hasAttackedThisTurn = false;
-    public bool HasAttackedThisTurn 
-    {
-        get
-        {
-            return hasAttackedThisTurn;
-        }
-    }
-
     private TileCoord tileCoord = new TileCoord(0, 0);
     public TileCoord TileCoord
     {
@@ -56,7 +47,6 @@ public abstract class MovingPiece : MonoBehaviour
         if(hit.transform == null && !hasMovedThisTurn)
         {				
             StartCoroutine(SmoothMovement(end));
-            hasMovedThisTurn = true;
             return true;
         }
         
@@ -74,6 +64,8 @@ public abstract class MovingPiece : MonoBehaviour
             sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             yield return null;
         }
+        
+        hasMovedThisTurn = true;
     }
     
     protected virtual bool AttemptMove<T>(float xDir, float yDir) where T : Component

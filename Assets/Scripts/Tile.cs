@@ -9,6 +9,14 @@ public class Tile : MonoBehaviour
     public Sprite[] tileSprites = new Sprite[2];    
     public SpriteRenderer sprTile;
     private bool isHovered = false;
+    public bool IsHovered
+    {
+        get
+        {
+            return isHovered;
+        }
+    }
+    
     private Color hoverColor = new Color(1.0f, 0.5f, 0, 1);
 
     // Start is called before the first frame update

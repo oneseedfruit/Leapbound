@@ -165,6 +165,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 8451628287899184547, guid: 1a9dc833861fcb09d8f315df4cc4ccac, type: 3}
+  crosshair: {fileID: 8911146712905163050, guid: 135b25af5a564b77a8e4445f97429272,
+    type: 3}
   playerStartTileCoord: {x: 0, y: 0}
 --- !u!114 &374382615
 MonoBehaviour:
@@ -181,6 +183,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 6370133035895764644, guid: 525b45d498a2b015287c965c67cdec39,
     type: 3}
   XTimesY: {x: 8, y: 8}
+  tiles: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
