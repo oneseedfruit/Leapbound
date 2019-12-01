@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Board : MonoBehaviour
 {
@@ -43,10 +44,10 @@ public class Board : MonoBehaviour
         }
     }
 
-    public GameObject GetTileFromTileCoord(float x, float y)
+    public GameObject GetTileFromTileCoord(int x, int y)
     {
         GameObject tile = null;
-        Vector2 tileCoord = new Vector2(x, y);
+        TileCoord tileCoord = new TileCoord(x, y);
 
         for (int i = 0; i < tiles.Count; i++)
         {
@@ -59,7 +60,7 @@ public class Board : MonoBehaviour
         return tile;
     }
 
-    public Vector3 GetTilePositionFromTileCoord(float x, float y)
+    public Vector3 GetTilePositionFromTileCoord(int x, int y)
     {        
         Tile tile = GetTileFromTileCoord(x, y).GetComponent<Tile>();
 
@@ -80,6 +81,11 @@ public class Board : MonoBehaviour
                 {
                     Tile t = hitCol.gameObject.GetComponent<Tile>();
                     t.Select();
+
+                    if (Input.GetMouseButton(0))
+                    {
+                        EventManager.instance.ClickTileCoord(t.tileCoord.x, t.tileCoord.y);
+                    }
                 }
             }
         }    

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KnightPiece : MovingPiece
+public class BoardPiece : MovingPiece
 {
     [SerializeField]
-    private Vector2 target = new Vector2(2, 1);
+    private TileCoord startTileCoord = new TileCoord(0, 0);
 
     private Board board;
 
@@ -14,22 +14,18 @@ public class KnightPiece : MovingPiece
     {
         base.Start();
 
-        board = GameManager.instance.board;
-        transform.position = board.GetTilePositionFromTileCoord(0, 0);
+        board = GameManager.instance.Board;
+        transform.position = board.GetTilePositionFromTileCoord(startTileCoord.x, startTileCoord.y);
+
+        EventManager.instance.onClickTileCoord += MoveToTileCoord;
     }
 
-    // Update is called once per frame
-    void Update()
-    {           
-        MoveToTileCoord(target.x, target.y);
-    }
-
-    protected void MoveToTileCoord(float x, float y)
+    protected void MoveToTileCoord(int x, int y)
     {
         Vector3 target = board.GetTilePositionFromTileCoord(x, y);
         Vector3 targetDir = target - transform.position;
 
-        AttemptMove<KnightPiece>(targetDir.x, targetDir.y);
+        AttemptMove<BoardPiece>(targetDir.x, targetDir.y);
     }
 
     protected override void OnCantMove<T>(T component)

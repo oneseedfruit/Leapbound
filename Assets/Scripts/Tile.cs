@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public Vector2 tileCoord = new Vector2(0, 0);
+    public TileCoord tileCoord = new TileCoord(0, 0);
 
     public TileShade tileShade = TileShade.light;
         
