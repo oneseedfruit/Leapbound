@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerPiece : MovingPiece, IAggressable
+public class PlayerPiece : MovingPiece, IShootable, ITurn
 {
     [SerializeField]
     private TileCoord startTileCoord = new TileCoord(5, 3);
@@ -17,10 +17,10 @@ public class PlayerPiece : MovingPiece, IAggressable
         board = GameManager.instance.Board;
 
         MoveToTileCoord(startTileCoord.x, startTileCoord.y);
-        EventManager.instance.onClickTileCoord += MoveToTileCoord;        
+        EventManager.instance.onClickTileCoord += MoveToTileCoord;
     }
 
-    private void Update() 
+    private void Update()
     {
         Color legalTilesColor = HasMovedThisTurn ? new Color(0.6f, 0.6f, 0.8f) : new Color(0.2f, 0.2f, 0.8f);
         ShowLegalTilesFromHere(legalTilesColor);
@@ -158,13 +158,46 @@ public class PlayerPiece : MovingPiece, IAggressable
         return isLegalMove;
     }
 
-    protected override void MoveToTileCoord(int x, int y)
+    private TileCoord GetRelativeTileCoordFrom(int x, int y)
     {
-        if (IsMoveToTileCoordLegal(x, y))
+        int xDiff = x - TileCoord.x;
+        int yDiff = y - TileCoord.y;
+
+        return new TileCoord(xDiff, yDiff);
+    }
+
+    protected void MoveToTileCoord(int x, int y)
+    {
+        if (!HasMovedThisTurn)
         {
-            base.MoveToTileCoord(x, y);
+            TileCoord t = new TileCoord(-111, -111);
+
+            if (IsMoveToTileCoordLegal(x, y))
+            {
+                t = GetRelativeTileCoordFrom(x, y);
+
+                Vector3 target = GameManager.instance.Board.GetTilePositionFromTileCoord(x, y);
+                Vector3 targetDir = target - transform.position;
+
+                if (AttemptMove<PlayerPiece>(targetDir.x, targetDir.y))
+                {
+                    TileCoord = new TileCoord(x, y);
+                }
+            }
+
+            t = TileCoord + new Vector3(t.x, t.y, 0);
+
+            if (t.x != -111 && t.y != -111)
+            {
+                GameObject tile = GameManager.instance.Board.GetTileFromTileCoord(t.x, t.y);
+                
+                if (tile != null)
+                {
+                    GameManager.instance.NextEnemySpawnTileCoord = t;
+                    EventManager.instance.SpawnNextEnemy(t.x, t.y);
+                }
+            }
         }
-        // ResetMoveTurn();
     }
 
     protected override void OnCantMove<T>(T component)
@@ -172,7 +205,40 @@ public class PlayerPiece : MovingPiece, IAggressable
         
     }
 
-    private bool hasAttackedThisTurn = false;    
+    private float bulletForce = 110f;
+
+    [SerializeField]
+    private GameObject projectile;
+    public GameObject Projectile 
+    { 
+        get
+        {
+            return projectile;
+        } 
+        
+        set
+        {
+            projectile = value;
+        } 
+    }
+
+    private int maxProjectileCount = 3;
+
+    private int projectileCount = 3;
+    public int ProjectileCount
+    {
+        get
+        {
+            return projectileCount;
+        }
+
+        set
+        {
+            projectileCount = value;
+        }
+    }
+
+    private bool hasAttackedThisTurn = true;    
     public bool HasAttackedThisTurn 
     { 
         get 
@@ -208,14 +274,56 @@ public class PlayerPiece : MovingPiece, IAggressable
         }
     }
     
-    public void Fire()
+    private IEnumerator ShootBullet()
     {
-        Debug.Log(attackTarget);
-        hasAttackedThisTurn = true;
+        for (; projectileCount > 0; projectileCount--)
+        {
+            Vector3 bulletPos = new Vector3(transform.position.x, transform.position.y, 0);
+            GameObject bullet = Instantiate(projectile, bulletPos, Quaternion.identity) as GameObject;
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            rbBullet.AddForce(attackTarget * bulletForce);
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        yield break;
+    }
+
+    public void Fire()
+    {        
+        BoxCollider col = GetComponent<BoxCollider>();
+        col.enabled = false;
+        StartCoroutine(ShootBullet());
+        col.enabled = true;
+        hasAttackedThisTurn = true;        
     }
 
     public void ResetAttackTurn()
     {
+        projectileCount = maxProjectileCount;
         hasAttackedThisTurn = false;
+    }
+
+    private bool isTurn = false;
+    public bool IsTurn 
+    { 
+        get
+        {
+            return isTurn;
+        }
+    }
+
+    public void EndTurn()
+    {
+        if (HasMovedThisTurn && HasAttackedThisTurn)
+        {
+            isTurn = false;
+        }
+    }
+    
+    public void ResetTurn()
+    {
+        ResetMoveTurn();
+        ResetAttackTurn();
+        isTurn = true;
     }
 }

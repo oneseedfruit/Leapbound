@@ -11,7 +11,7 @@ public abstract class MovingPiece : MonoBehaviour
     protected Rigidbody rb;
     private float inverseMoveTime;
 
-    private bool hasMovedThisTurn = false;
+    private bool hasMovedThisTurn = true;
     public bool HasMovedThisTurn
     {
         get
@@ -26,6 +26,11 @@ public abstract class MovingPiece : MonoBehaviour
         get
         {
             return tileCoord;
+        }
+
+        set
+        {
+            tileCoord = value;
         }
     }
     
@@ -86,18 +91,6 @@ public abstract class MovingPiece : MonoBehaviour
         }
 
         return canMove;
-    }
-    
-    protected virtual void MoveToTileCoord(int x, int y)
-    {
-        Vector3 target = GameManager.instance.Board.GetTilePositionFromTileCoord(x, y);
-        Vector3 targetDir = target - transform.position;
-
-        if (AttemptMove<PlayerPiece>(targetDir.x, targetDir.y))
-        {
-            tileCoord.x = x;
-            tileCoord.y = y;
-        }
     }
 
     protected abstract void OnCantMove<T>(T component) where T : Component;

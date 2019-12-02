@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public interface IAggressable
+public interface IShootable
 {
+    GameObject Projectile { get; set; }
+    int ProjectileCount { get; set; }
     bool HasAttackedThisTurn { get; set; }
     Vector2 AttackTarget { get; set; }
 

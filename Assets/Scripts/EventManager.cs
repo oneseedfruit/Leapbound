@@ -16,6 +16,15 @@ public class EventManager : MonoBehaviour
         }
     }
 
+    public event Action<int, int> onSpawnNextEnemy;
+    public void SpawnNextEnemy(int x, int y)
+    {
+        if (onSpawnNextEnemy != null)
+        {
+            onSpawnNextEnemy(x, y);
+        }
+    }
+
     private void Awake()
     {
         if (instance == null)
