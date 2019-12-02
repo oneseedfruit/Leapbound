@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {    
+    public GameObject spawnedBy;
+
     private int stamina = 6;
 
     private void OnCollisionEnter(Collision other) 
@@ -12,6 +14,10 @@ public class Bullet : MonoBehaviour
 
         if (stamina <= 0)
         {
+            if (spawnedBy != null)
+            {
+                spawnedBy.GetComponent<PlayerPiece>().ExpireBullet();
+            }
             Destroy(gameObject);
         }
     }

@@ -280,12 +280,25 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         {
             Vector3 bulletPos = new Vector3(transform.position.x, transform.position.y, 0);
             GameObject bullet = Instantiate(projectile, bulletPos, Quaternion.identity) as GameObject;
+            bullet.GetComponent<Bullet>().spawnedBy = this.gameObject;    
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             rbBullet.AddForce(attackTarget * bulletForce);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.15f);
         }
         
         yield break;
+    }
+
+    public void ExpireBullet()
+    {
+        if (projectileCount > 0)
+        {
+            projectileCount--;
+        }
+        else
+        {
+            EndTurn();
+        }
     }
 
     public void Fire()
