@@ -87,7 +87,32 @@ public class GameManager : MonoBehaviour
             GameObject e = Instantiate(enemy, spawnPos, Quaternion.identity) as GameObject;
             e.GetComponent<EnemyPiece>().TileCoord = new TileCoord(x, y);
             enemies.Add(e);
+            turnParticipants.Add(e);
         }
+    }
+
+    public bool CheckIfTileCoordIsOccupied(int x, int y)
+    {
+        bool isOccupied = false;
+
+        for (int i = 0; i < turnParticipants.Count; i++)
+        {
+            PlayerPiece p = turnParticipants[i].GetComponent<PlayerPiece>();
+            if (p != null)
+            {
+                if (p.TileCoord.x.Equals(x) && p.TileCoord.y.Equals(y))
+                    isOccupied = true;
+            }
+
+            EnemyPiece e = turnParticipants[i].GetComponent<EnemyPiece>();
+            if (e != null)
+            {
+                if (e.TileCoord.x.Equals(x) && e.TileCoord.y.Equals(y))
+                    isOccupied =  true;
+            }
+        }
+        
+        return isOccupied;
     }
 
     private void Update()
@@ -103,14 +128,13 @@ public class GameManager : MonoBehaviour
         while(currentParticipant < turnParticipantCount)
         {   
             ITurn current = turnParticipants[currentParticipant].GetComponent<ITurn>();
+            
             if (!current.IsTurn)
             {
-                currentParticipant++;
-            }
-            yield return null;
+                currentParticipant++;                
+            }            
+            yield return null;            
         }
-
-        turn++;
 
         for (int i = 0; i < turnParticipants.Count; i++)
         {

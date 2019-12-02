@@ -137,7 +137,8 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         {
             GameObject tile = GameManager.instance.Board.tiles[i];
             Tile t = tile.GetComponent<Tile>();
-            if (IsMoveToTileCoordLegal(t.tileCoord.x, t.tileCoord.y))
+            if (IsMoveToTileCoordLegal(t.tileCoord.x, t.tileCoord.y) && 
+                !GameManager.instance.CheckIfTileCoordIsOccupied(t.tileCoord.x, t.tileCoord.y))
             {
                 legalTiles.Add(GameManager.instance.Board.tiles[i]);
             }
@@ -182,9 +183,12 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
                 Vector3 target = GameManager.instance.Board.GetTilePositionFromTileCoord(x, y);
                 Vector3 targetDir = target - transform.position;
 
-                if (AttemptMove<PlayerPiece>(targetDir.x, targetDir.y))
+                if (!GameManager.instance.CheckIfTileCoordIsOccupied(x, y))
                 {
-                    TileCoord = new TileCoord(x, y);
+                    if (AttemptMove<EnemyPiece>(targetDir.x, targetDir.y))
+                    {
+                        TileCoord = new TileCoord(x, y);
+                    }
                 }
             }
 

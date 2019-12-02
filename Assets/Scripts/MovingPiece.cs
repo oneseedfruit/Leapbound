@@ -18,6 +18,11 @@ public abstract class MovingPiece : MonoBehaviour
         {
             return hasMovedThisTurn;
         }
+
+        set
+        {
+            hasMovedThisTurn = value;
+        }
     }
 
     private TileCoord tileCoord = new TileCoord(0, 0);
@@ -74,7 +79,7 @@ public abstract class MovingPiece : MonoBehaviour
     }
     
     protected virtual bool AttemptMove<T>(float xDir, float yDir) where T : Component
-    {
+    {   
         RaycastHit hit;
         bool canMove = Move(xDir, yDir, out hit);
 
