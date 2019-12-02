@@ -98,14 +98,17 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
                     }
                 #endif
 
-                    if (Input.GetMouseButton(0))
+                    if (HasMovedThisTurn)
                     {
-                        Aim(crosshair.transform.position.x, crosshair.transform.position.y);
-                    }
+                        if (Input.GetMouseButton(0))
+                        {
+                            Aim(crosshair.transform.position.x, crosshair.transform.position.y);
+                        }
 
-                    if (Input.GetMouseButtonUp(0))
-                    {
-                        Fire();
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            Fire();
+                        }
                     }
                 }
             }    
@@ -205,7 +208,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         
     }
 
-    private float bulletForce = 110f;
+    private float bulletForce = 120f;
 
     [SerializeField]
     private GameObject projectile;
@@ -222,7 +225,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         } 
     }
 
-    private int maxProjectileCount = 3;
+    private int projectilesAllowed = 3;
 
     private int projectileCount = 3;
     public int ProjectileCount
@@ -276,22 +279,21 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
     
     private IEnumerator ShootBullet()
     {
-        for (; projectileCount > 0; projectileCount--)
+        for (int i = projectilesAllowed; i > 0; i--)
         {
-            Vector3 bulletPos = new Vector3(transform.position.x, transform.position.y, 0);
+            Vector3 bulletPos = new Vector3(transform.position.x, transform.position.y, 0);            
             GameObject bullet = Instantiate(projectile, bulletPos, Quaternion.identity) as GameObject;
             bullet.GetComponent<Bullet>().spawnedBy = this.gameObject;    
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             rbBullet.AddForce(attackTarget * bulletForce);
-            yield return new WaitForSeconds(0.15f);
+            
+            yield return new WaitForSeconds(0.2f);
         }
-        
-        yield break;
     }
 
     public void ExpireBullet()
-    {
-        if (projectileCount > 0)
+    {        
+        if (projectileCount > 1)
         {
             projectileCount--;
         }
@@ -312,7 +314,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
 
     public void ResetAttackTurn()
     {
-        projectileCount = maxProjectileCount;
+        projectileCount = projectilesAllowed;
         hasAttackedThisTurn = false;
     }
 
@@ -330,6 +332,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         if (HasMovedThisTurn && HasAttackedThisTurn)
         {
             isTurn = false;
+            projectileCount = projectilesAllowed;
         }
     }
     
