@@ -159,7 +159,9 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 0
-  hpCount: 20
+  hpCount: 50
+  projectile: {fileID: 613873928187714018, guid: 57172b6f7f74f192a8355f5e7e7d4c32,
+    type: 3}
 --- !u!1 &7461989828596340088
 GameObject:
   m_ObjectHideFlags: 0

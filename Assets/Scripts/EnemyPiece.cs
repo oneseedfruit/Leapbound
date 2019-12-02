@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyPiece : MovingPiece, ITurn
+public class EnemyPiece : MovingPiece, ITurn, IShootable
 {
     public int hpCount = 50;
 
@@ -17,7 +17,11 @@ public class EnemyPiece : MovingPiece, ITurn
     }
 
     private void Update() 
-    {           
+    {   
+        if (Random.value >= 0.5f)
+            hasAttackedThisTurn = true;
+        Aim(Random.Range(-1, 1), Random.Range(-1, 1));
+        Fire();
         MoveToTileCoord(moveToThisTile.x, moveToThisTile.y);
         EndTurn();
         hpLabel.rectTransform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, -0.8f, 0));
@@ -76,7 +80,7 @@ public class EnemyPiece : MovingPiece, ITurn
 
     protected void MoveToTileCoord(int x, int y)
     {   
-        if (!HasMovedThisTurn)
+        if (!HasMovedThisTurn && hasAttackedThisTurn)
         {
             if (GameManager.instance.CheckIfTileCoordIsOccupied(x, y) || !IsMoveToTileCoordLegal(x, y))
             {
@@ -148,7 +152,7 @@ public class EnemyPiece : MovingPiece, ITurn
 
     public void EndTurn()
     {
-        if (HasMovedThisTurn)
+        if (HasMovedThisTurn && hasAttackedThisTurn)
         {            
             isTurn = false;
         }
@@ -158,6 +162,7 @@ public class EnemyPiece : MovingPiece, ITurn
     {
         NewRandomDirection();
         ResetMoveTurn();
+        ResetAttackTurn();
         isTurn = true;
     }
 
@@ -183,5 +188,111 @@ public class EnemyPiece : MovingPiece, ITurn
                 GetHurt(b.attackPower);
             }
         }
+    }
+
+
+
+
+    private float bulletForce = 120f;
+
+    [SerializeField]
+    private GameObject projectile;
+    public GameObject Projectile 
+    { 
+        get
+        {
+            return projectile;
+        } 
+        
+        set
+        {
+            projectile = value;
+        } 
+    }
+
+    private int projectilesAllowed = 1;
+
+    private int projectileCount = 1;
+    public int ProjectileCount
+    {
+        get
+        {
+            return projectileCount;
+        }
+
+        set
+        {
+            projectileCount = value;
+        }
+    }
+
+    private bool hasAttackedThisTurn = true;    
+    public bool HasAttackedThisTurn 
+    { 
+        get 
+        {
+            return hasAttackedThisTurn;
+        } 
+
+        set 
+        {
+            hasAttackedThisTurn = value;
+        }
+    }
+
+    private Vector2 attackTarget = new Vector2(0, 0);
+    public Vector2 AttackTarget 
+    { 
+        get
+        {
+            return attackTarget;
+        }
+
+        set
+        {
+            attackTarget = value;
+        }
+    }
+
+    public void Aim(float x, float y)
+    {
+        if (!HasAttackedThisTurn)
+        {
+            attackTarget = new Vector3(x, y, 0) - new Vector3(transform.position.x, transform.position.y, 0);            
+        }
+    }    
+
+    public void ExpireBullet()
+    {        
+        if (projectileCount >= projectilesAllowed)
+        {
+            projectileCount--;
+        }
+        else
+        {
+            EndTurn();
+        }
+    }
+
+    public void Fire()
+    {        
+        if (!HasAttackedThisTurn)
+        {
+            BoxCollider col = GetComponent<BoxCollider>();
+            col.enabled = false;
+            Vector3 bulletPos = new Vector3(transform.position.x, transform.position.y, 0);            
+            GameObject bullet = Instantiate(projectile, bulletPos, Quaternion.identity) as GameObject;
+            bullet.GetComponent<Bullet>().spawnedBy = this.gameObject;    
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            rbBullet.AddForce(attackTarget * bulletForce);
+            col.enabled = true;
+            hasAttackedThisTurn = true;        
+        }
+    }
+
+    public void ResetAttackTurn()
+    {
+        projectileCount = projectilesAllowed;
+        hasAttackedThisTurn = false;
     }
 }

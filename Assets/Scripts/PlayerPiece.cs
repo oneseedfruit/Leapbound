@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerPiece : MovingPiece, IShootable, ITurn
 {
@@ -8,6 +9,10 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
     private TileCoord startTileCoord = new TileCoord(5, 3);
 
     private Board board;
+
+    public int hpCount = 100;
+
+    private Text hpLabel;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -18,12 +23,16 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
 
         MoveToTileCoord(startTileCoord.x, startTileCoord.y);
         EventManager.instance.onClickTileCoord += MoveToTileCoord;
+
+        hpLabel = GetComponentInChildren<Text>();
     }
 
     private void Update()
     {
         Color legalTilesColor = HasMovedThisTurn ? new Color(0.6f, 0.6f, 0.8f) : new Color(0.2f, 0.2f, 0.8f);
         ShowLegalTilesFromHere(legalTilesColor);
+        hpLabel.rectTransform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, -0.8f, 0));
+        hpLabel.text = hpCount >= 100 ? hpCount.ToString() : "You're Dead!";
 
         if (!HasAttackedThisTurn && HasMovedThisTurn)
         {
@@ -345,5 +354,27 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         ResetMoveTurn();
         ResetAttackTurn();
         isTurn = true;
+    }
+
+    private void GetHurt(int attackedPower)
+    {
+        hpCount -= attackedPower;
+
+        if (hpCount <= 0)
+        {            
+            
+        }
+    }
+
+    private void OnCollisionEnter(Collision other) 
+    {
+        if (other.collider.tag == "Bullet")
+        {
+            Bullet b = other.collider.GetComponent<Bullet>();
+            if (b.spawnedBy.tag == "Enemy")
+            {
+                GetHurt(b.attackPower);
+            }
+        }
     }
 }

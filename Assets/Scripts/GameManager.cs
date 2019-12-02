@@ -37,9 +37,6 @@ public class GameManager : MonoBehaviour
     public GameObject crosshair;
     public Vector2 playerStartTileCoord = new Vector2(0, 0);
 
-    [SerializeField]
-    private int turn = 0;
-
     private void Awake() 
     {
         if (instance == null)

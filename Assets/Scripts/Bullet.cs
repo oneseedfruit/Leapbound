@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviour
 
                 if (e != null)
                 {
-
+                    e.ExpireBullet();
                 }                    
             }
             Destroy(gameObject);
