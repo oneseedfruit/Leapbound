@@ -1,19 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyPiece : MovingPiece, ITurn
 {
+    public int hpCount = 50;
+
+    private Text hpLabel;
+
     private TileCoord moveToThisTile = new TileCoord(0, 0);
     protected override void Start()
     {
         base.Start();
+        hpLabel = GetComponentInChildren<Text>();
     }
 
     private void Update() 
     {           
         MoveToTileCoord(moveToThisTile.x, moveToThisTile.y);
         EndTurn();
+        hpLabel.rectTransform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, -0.8f, 0));
+        hpLabel.text = hpCount.ToString();
     }
 
     private void ShowLegalTilesFromHere(Color color)
@@ -151,5 +159,29 @@ public class EnemyPiece : MovingPiece, ITurn
         NewRandomDirection();
         ResetMoveTurn();
         isTurn = true;
+    }
+
+    private void GetHurt(int attackedPower)
+    {
+        hpCount -= attackedPower;
+
+        if (hpCount <= 0)
+        {
+            GameManager.instance.enemies.Remove(gameObject);
+            GameManager.instance.turnParticipants.Remove(gameObject);
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision other) 
+    {
+        if (other.collider.tag == "Bullet")
+        {
+            Bullet b = other.collider.GetComponent<Bullet>();
+            if (b.spawnedBy.tag == "Player")
+            {
+                GetHurt(b.attackPower);
+            }
+        }
     }
 }

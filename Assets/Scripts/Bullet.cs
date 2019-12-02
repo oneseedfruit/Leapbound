@@ -9,7 +9,8 @@ public class Bullet : MonoBehaviour
     private Transform tfSprBullet;
     private SpriteRenderer sprBullet;
 
-    private int stamina = 6;
+    private int stamina = 5;
+    public int attackPower = 1;
 
     private void Start() 
     {
@@ -17,8 +18,10 @@ public class Bullet : MonoBehaviour
         sprBullet = GetComponentInChildren<SpriteRenderer>();
     }
 
-    private void OnCollisionEnter(Collision other) 
+    private void OnCollisionEnter(Collision other)
     {
+        attackPower++;
+
         stamina--;
         tfSprBullet.localScale = new Vector3(tfSprBullet.localScale.x * 0.95f, tfSprBullet.localScale.y * 0.95f, 1);
         sprBullet.color = new Color(sprBullet.color.r, sprBullet.color.g, sprBullet.color.b, sprBullet.color.a * 0.95f);
@@ -26,7 +29,17 @@ public class Bullet : MonoBehaviour
         {
             if (spawnedBy != null)
             {
-                spawnedBy.GetComponent<PlayerPiece>().ExpireBullet();
+                PlayerPiece p = spawnedBy.GetComponent<PlayerPiece>();
+                EnemyPiece e = spawnedBy.GetComponent<EnemyPiece>();
+                if (p != null)
+                {
+                    p.ExpireBullet();
+                }
+
+                if (e != null)
+                {
+
+                }                    
             }
             Destroy(gameObject);
         }
