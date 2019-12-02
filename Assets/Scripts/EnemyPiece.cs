@@ -18,7 +18,7 @@ public class EnemyPiece : MovingPiece, ITurn, IShootable
 
     private void Update() 
     {   
-        if (Random.value >= 0.5f)
+        if (Random.value >= 0.1f)
             hasAttackedThisTurn = true;
         Aim(Random.Range(-1, 1), Random.Range(-1, 1));
         Fire();
