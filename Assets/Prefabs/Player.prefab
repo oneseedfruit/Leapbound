@@ -308,7 +308,7 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 0
-  hpCount: 50
+  hpCount: 100
   projectile: {fileID: 613873928187714018, guid: 883c2254c80b44bcb911be75daa06cb2,
     type: 3}
 --- !u!65 &8451628287899184222

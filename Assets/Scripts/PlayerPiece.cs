@@ -32,7 +32,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         Color legalTilesColor = HasMovedThisTurn ? new Color(0.6f, 0.6f, 0.8f) : new Color(0.2f, 0.2f, 0.8f);
         ShowLegalTilesFromHere(legalTilesColor);
         hpLabel.rectTransform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, -0.8f, 0));
-        hpLabel.text = hpCount >= 100 ? hpCount.ToString() : "You're Dead!";
+        hpLabel.text = hpCount >= 0 ? hpCount.ToString() : "You're Dead!";
 
         if (!HasAttackedThisTurn && HasMovedThisTurn)
         {
@@ -221,7 +221,7 @@ public class PlayerPiece : MovingPiece, IShootable, ITurn
         
     }
 
-    private float bulletForce = 120f;
+    private float bulletForce = 130f;
 
     [SerializeField]
     private GameObject projectile;
