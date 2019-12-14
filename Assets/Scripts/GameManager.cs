@@ -118,11 +118,10 @@ public class GameManager : MonoBehaviour
     }
 
     protected IEnumerator UpdateTurn()
-    {	        
-        int turnParticipantCount = turnParticipants.Count;
+    {
         int currentParticipant = 0;
 
-        while(currentParticipant < turnParticipantCount)
+        while(currentParticipant < turnParticipants.Count)
         {   
             ITurn current = turnParticipants[currentParticipant].GetComponent<ITurn>();
             

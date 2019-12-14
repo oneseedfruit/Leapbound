@@ -44,4 +44,9 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void OnCollisionStay(Collision other)
+    {
+        OnCollisionEnter(other);
+    }
 }
